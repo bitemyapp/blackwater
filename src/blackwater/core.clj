@@ -12,6 +12,7 @@
   (println (str (bold (green (str sql)))) "| took:" (str (red (str millis))) "ms"))
 
 (def extract-transaction? #'j/extract-transaction?)
+
 (defn query! [f]
   (fn [& args]
     ;; (println "query! args: " args)
@@ -20,6 +21,16 @@
           end (time/now)
           time-taken (time/in-millis (time/interval start end))]
       (log (first (second args)) time-taken)
+      result)))
+
+(defn execute! [f]
+  (fn [& args]
+    ;; (println "query! args: " args)
+    (let [start (time/now)
+          result (apply f args)
+          end (time/now)
+          time-taken (time/in-millis (time/interval start end))]
+      (log (clojure.string/join " | " (second args)) time-taken)
       result)))
 
 (defn insert! [f]
@@ -46,6 +57,11 @@
    #'j/insert!
    insert!))
 
+(defn decorate-execute! []
+  (alter-var-root
+   #'j/execute!
+   execute!))
+
 ;; (defn decorate-do-prepared! []
 ;;   (alter-var-root
 ;;    #'j/do-prepared
@@ -54,11 +70,6 @@
 ;; (defn decorate-transaction! []
 ;;   (alter-var-root
 ;;    #'j/db-transaction*
-;;    decorate-var!))
-
-;; (defn decorate-execute! []
-;;   (alter-var-root
-;;    #'j/execute!
 ;;    decorate-var!))
 
 ;; (defn decorate-insert! []
