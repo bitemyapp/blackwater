@@ -2,6 +2,8 @@
 
 A Clojure library for logging SQL queries and the time they took for Korma and clojure.java.jdbc
 
+![alt text](screenie.png "example image of blackwater output")
+
 ## Usage
 
 In Leiningen add:
