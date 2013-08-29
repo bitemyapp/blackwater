@@ -16,6 +16,10 @@ Then, in your ns form:
 
 And invoke decorate-korma! or decorate-cjj! as appropriate. Thanks to technomancy's robert.hooke these operations are idempotent, but still marked with a `!` because they *ARE* modifying c.j.j and Korma.
 
+To disable the ANSI coloring, set `*use-ansi*` in the clansi ns to false.
+
+To customize ANSI coloring, set *time-color* or *sql-color* in the black.water ns. By default they are `:red` and `:green` respectively, check clansi for valid color symbols.
+
 ## Development
 
 You need to init a sqlite test database named `test.sql` at the top level of the project.

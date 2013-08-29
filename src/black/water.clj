@@ -11,8 +11,11 @@
                :classname "org.sqlite.JDBC"
                :subname "./test.sql"})
 
+(def *sql-color* :green)
+(def *time-color* :red)
+
 (defn log [sql millis]
-  (println (style sql :green) "| took:" (style millis :red) "ms"))
+  (println (style sql *sql-color*) "| took:" (style millis *time-color*) "ms"))
 
 (def extract-transaction? #'j/extract-transaction?)
 
