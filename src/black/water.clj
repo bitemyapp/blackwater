@@ -60,15 +60,14 @@
 (defn decorate-execute! []
   (add-hook #'j/execute! #'execute-hook))
 
-(defn decorate-cjj! []
+(defn decorate-cjj!
+  "Hooks into clojure.java.jdbc to log queries, inserts, and execute"
+  []
   (decorate-query!)
   (decorate-insert!)
   (decorate-execute!))
 
-(defn decorate-korma! []
-  ;; (add-hook #'j/do-prepared #'korma-hook)
-  ;; (add-hook #'j/do-prepared-return-keys #'korma-hook)
-  ;; (add-hook #'j/with-query-results #'korma-hook)
-  ;; (add-hook #'j/transaction #'korma-hook)
-  ;; (add-hook #'kc/exec #'korma-hook)
+(defn decorate-korma!
+  "Hooks into Korma to log SQL that gets executed."
+  []
   (add-hook #'kdb/exec-sql #'korma-hook))
