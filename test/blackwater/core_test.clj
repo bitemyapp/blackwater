@@ -40,13 +40,28 @@
   (select test-table
           (fields [:id :str :num])))
 
+(defn run-korma-insert []
+  (insert test-table
+          (values {:str "I have been inserted!" :num 99})))
+
+(defn run-korma-update []
+  (update test-table
+          (set-fields {:str "I have been updated!"
+                       :num 9090})
+          (where {:id 2})))
+
+(defn run-korma-insert-and-delete []
+  (insert test-table
+          (values {:str "I have been inserted!" :num 99 :id 9001}))
+  (delete test-table
+          (where {:id 9001})))
+
+
 (defn count-newlines [string]
   (count (clojure.string/split string #"\n")))
 
-(deftest test-blackwater
-  (decorate-query!)
-  (decorate-insert!)
-  (decorate-execute!)
+(deftest test-blackwater-cjj
+  (decorate-cjj!)
   (binding [clansi/*use-ansi* false]
     (testing "c.j.j query generates log line"
       (let [query-out (with-out-str (run-query))]
@@ -87,3 +102,41 @@
            "DELETE FROM test_table WHERE id = ?"))
 
       (is (= (count-newlines i-and-d-out) 2))))))
+
+(deftest test-blackwater-korma
+  (decorate-korma!)
+  (binding [clansi/*use-ansi* false]
+
+    (testing "korma query generates log line"
+      (let [out (with-out-str (run-korma-query))]
+
+        (is (.contains
+             out
+             "SELECT \"test_table\".\"id\" AS \"str\" FROM \"test_table\""))))
+
+    (testing "korma insert generates log line"
+      (let [out (with-out-str (run-korma-insert))]
+
+        (is (.contains
+             out
+             "INSERT INTO \"test_table\" (\"str\", \"num\") VALUES (?, ?)"))))
+
+    (testing "korma update generates log line"
+      (let [out (with-out-str (run-korma-update))]
+
+        (is (.contains
+             out
+             "UPDATE \"test_table\" SET \"num\" = ?, \"str\" = ? WHERE (\"test_table\".\"id\" = ?)"))))
+
+    (testing "korma insert and delete generates log line"
+      (let [out (with-out-str (run-korma-insert-and-delete))]
+
+        (is (.contains
+             out
+             "INSERT INTO \"test_table\" (\"str\", \"num\", \"id\") VALUES (?, ?, ?)"))
+
+        (is (.contains
+             out
+             "DELETE FROM \"test_table\" WHERE (\"test_table\".\"id\" = ?)"))
+
+        (is (= (count-newlines out) 2))))))
