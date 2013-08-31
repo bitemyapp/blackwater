@@ -4,6 +4,10 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 ![alt text](screenie.png "example image of blackwater output")
 
+## Marginalia Documentation
+
+[Marginalia documentation](https://rawgithub.com/bitemyapp/blackwater/master/docs/uberdoc.html)
+
 ## Usage
 
 In Leiningen add:
