@@ -12,7 +12,7 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 In Leiningen add:
 
-    [blackwater "0.0.5"]
+    [blackwater "0.0.6"]
 
 to your :dependencies.
 
@@ -24,7 +24,7 @@ And invoke decorate-korma! or decorate-cjj! as appropriate. Thanks to technomanc
 
 To disable the ANSI coloring, set `*use-ansi*` in the clansi ns to false.
 
-To customize ANSI coloring, set *time-color* or *sql-color* in the black.water ns. By default they are `:red` and `:green` respectively, check clansi for valid color symbols.
+To customize ANSI coloring, set `time-color` or `sql-color` in the black.water ns. By default they are `:red` and `:green` respectively, check clansi for valid color symbols.
 
 ## Development
 
