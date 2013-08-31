@@ -8,14 +8,14 @@
             [clj-time.core :as time]))
 
 ;; Color global variables, rebind as thou wilt.
-(def *sql-color* :green)
-(def *time-color* :red)
+(def sql-color :green)
+(def time-color :red)
 
 (defn log
   "Given the sql string and the milliseconds it took to execute, print
    a (possibly) colorized readout of the string and the millis."
   [sql millis]
-  (println (style sql *sql-color*) "| took:" (style millis *time-color*) "ms"))
+  (println (style sql sql-color) "| took:" (style millis time-color) "ms"))
 
 ;; extract-transaction? wrapper from the c.j.j function.
 (def extract-transaction? #'j/extract-transaction?)
