@@ -7,19 +7,23 @@
             [clansi.core :refer :all]
             [clj-time.core :as time]))
 
-(def mysql-db {:subprotocol "sqlite"
-               :classname "org.sqlite.JDBC"
-               :subname "./test.sql"})
-
+;; Color global variables, rebind as thou wilt.
 (def *sql-color* :green)
 (def *time-color* :red)
 
-(defn log [sql millis]
+(defn log
+  "Given the sql string and the milliseconds it took to execute, print
+   a (possibly) colorized readout of the string and the millis."
+  [sql millis]
   (println (style sql *sql-color*) "| took:" (style millis *time-color*) "ms"))
 
+;; extract-transaction? wrapper from the c.j.j function.
 (def extract-transaction? #'j/extract-transaction?)
 
-(defn query-hook [f & args]
+(defn query-hook
+  "Hook for c.j.j query, destructures sql from arguments
+   and times the run-time, sending the results to the log fn."
+  [f & args]
   (let [start (time/now)
         result (apply f args)
         end (time/now)
@@ -27,7 +31,9 @@
     (log (first (second args)) time-taken)
     result))
 
-(defn execute-hook [f & args]
+(defn execute-hook
+  "Hook for c.j.j execute!"
+  [f & args]
   (let [start (time/now)
         result (apply f args)
         end (time/now)
@@ -35,7 +41,9 @@
     (log (clojure.string/join " | " (second args)) time-taken)
     result))
 
-(defn insert-hook [f & args]
+(defn insert-hook
+  "Hook for c.j.j insert!"
+  [f & args]
   (let [start (time/now)
         [db table & options] args
         [transaction? maps-or-cols-and-values-etc] (extract-transaction? options)
@@ -46,7 +54,10 @@
     (log (clojure.string/join " | " (first stmts)) time-taken)
     result))
 
-(defn korma-hook [f & args]
+(defn korma-hook
+  "Hook for korma, mercifully the library has a universal, singular
+   function where all queries eventually end up. <3"
+  [f & args]
   (let [start (time/now)
         result (apply f args)
         end (time/now)
@@ -54,13 +65,19 @@
     (log (:sql-str (first args)) time-taken)
     result))
 
-(defn decorate-query! []
+(defn decorate-query!
+  "decorate c.j.j/query, wraps the fn var."
+  []
   (add-hook #'j/query #'query-hook))
 
-(defn decorate-insert! []
+(defn decorate-insert!
+  "decorate c.j.j/insert!, wraps the fn var."
+  []
   (add-hook #'j/insert! #'insert-hook))
 
-(defn decorate-execute! []
+(defn decorate-execute!
+  "decorate c.j.j/execute!, wraps the fn var."
+  []
   (add-hook #'j/execute! #'execute-hook))
 
 (defn decorate-cjj!
