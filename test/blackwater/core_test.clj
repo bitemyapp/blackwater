@@ -21,6 +21,11 @@
   (j/query sqlite-db
            (s/select * :test_table)))
 
+(defn run-multiline-query []
+  (j/query sqlite-db
+           [(str "SELECT *
+                  FROM test_table")]))
+
 (defn run-insert []
   (j/insert! sqlite-db :test_table
              {:str "I have returned!" :num 30}))
@@ -65,6 +70,15 @@
   (binding [clansi/*use-ansi* false]
     (testing "c.j.j query generates log line"
       (let [query-out (with-out-str (run-query))]
+
+        (is (.contains
+             query-out
+             "SELECT * FROM test_table"))
+
+        (is (= (count-newlines query-out) 1))))
+
+    (testing "c.j.j multiline-query generates single log line"
+      (let [query-out (with-out-str (run-multiline-query))]
 
         (is (.contains
              query-out
