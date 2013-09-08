@@ -1,4 +1,4 @@
-(defproject blackwater "0.0.6"
+(defproject blackwater "0.0.7"
   :description "Pretty logging for SQL queries in JDBC for Clojure"
   :url "http://github.com/bitemyapp/blackwater"
   :license {:name "Eclipse Public License"

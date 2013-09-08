@@ -12,7 +12,7 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 In Leiningen add:
 
-    [blackwater "0.0.6"]
+    [blackwater "0.0.7"]
 
 to your :dependencies.
 
