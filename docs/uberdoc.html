@@ -3028,26 +3028,15 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>blackwater -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">blackwater</h1><h2 class="project-version">0.0.7</h2><br /><p>Pretty logging for SQL queries in JDBC for Clojure</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.5.1</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.6.0</td></tr><tr><td class="dep-name">robert/hooke</td><td class="dotted"><hr /></td><td class="dep-version">1.3.0</td></tr><tr><td class="dep-name">org.clojure/java.jdbc</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0-alpha4</td></tr><tr><td class="dep-name">korma</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0-RC5</td></tr><tr><td class="dep-name">myguidingstar/clansi</td><td class="dotted"><hr /></td><td class="dep-version">1.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#black.water">black.water</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#black.water" name="black.water"><h1 class="project-name">black.water</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns black.water
+</script><title>blackwater -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">blackwater</h1><h2 class="project-version">0.0.8</h2><br /><p>Pretty logging for SQL queries in JDBC for Clojure</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.5.1</td></tr><tr><td class="dep-name">clj-time</td><td class="dotted"><hr /></td><td class="dep-version">0.6.0</td></tr><tr><td class="dep-name">robert/hooke</td><td class="dotted"><hr /></td><td class="dep-version">1.3.0</td></tr><tr><td class="dep-name">org.clojure/java.jdbc</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0-alpha4</td></tr><tr><td class="dep-name">korma</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0-RC5</td></tr><tr><td class="dep-name">myguidingstar/clansi</td><td class="dotted"><hr /></td><td class="dep-version">1.3.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#black.water.jdbc">black.water.jdbc</a></li><li><a href="#black.water.korma">black.water.korma</a></li><li><a href="#black.water.log">black.water.log</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#black.water.jdbc" name="black.water.jdbc"><h1 class="project-name">black.water.jdbc</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns black.water.jdbc
   (:require [clojure.java.jdbc :as j]
             [robert.hooke :refer [add-hook]]
             [clojure.java.jdbc.sql :as s]
-            [korma.db :as kdb]
-            [korma.core :as kc]
             [clansi.core :refer :all]
-            [clj-time.core :as time]))</pre></td></tr><tr><td class="docs"><p>Color global variables, rebind as thou wilt.</p>
-</td><td class="codes"><pre class="brush: clojure">(def sql-color :green)
-(def time-color :red)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn sanitize [sql]
-  (let [single-line (apply str (replace {\newline &quot; &quot;} sql))]
-    (clojure.string/replace single-line #&quot; {2,}&quot; &quot; &quot;)))</pre></td></tr><tr><td class="docs"><p>Given the sql string and the milliseconds it took to execute, print
-   a (possibly) colorized readout of the string and the millis.</p>
-</td><td class="codes"><pre class="brush: clojure">(defn log
-  [sql millis]
-  (let [clean-sql (sanitize sql)]
-    (println (style clean-sql sql-color) &quot;| took:&quot; (style millis time-color) &quot;ms&quot;)))</pre></td></tr><tr><td class="docs"><p>extract-transaction? wrapper from the c.j.j function.</p>
+            [black.water.log :refer [log-sql]]
+            [clj-time.core :as time]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def extract-transaction? #'j/extract-transaction?)</pre></td></tr><tr><td class="docs"><p>Hook for c.j.j query, destructures sql from arguments
    and times the run-time, sending the results to the log fn.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn query-hook
@@ -3056,7 +3045,7 @@ net.brehaut.ClojureTools = (function (SH) {
         result (apply f args)
         end (time/now)
         time-taken (time/in-millis (time/interval start end))]
-    (log (first (second args)) time-taken)
+    (log-sql (first (second args)) time-taken)
     result))</pre></td></tr><tr><td class="docs"><p>Hook for c.j.j execute!</p>
 </td><td class="codes"><pre class="brush: clojure">(defn execute-hook
   [f &amp; args]
@@ -3064,7 +3053,7 @@ net.brehaut.ClojureTools = (function (SH) {
         result (apply f args)
         end (time/now)
         time-taken (time/in-millis (time/interval start end))]
-    (log (clojure.string/join &quot; | &quot; (second args)) time-taken)
+    (log-sql (clojure.string/join &quot; | &quot; (second args)) time-taken)
     result))</pre></td></tr><tr><td class="docs"><p>Hook for c.j.j insert!</p>
 </td><td class="codes"><pre class="brush: clojure">(defn insert-hook
   [f &amp; args]
@@ -3075,16 +3064,7 @@ net.brehaut.ClojureTools = (function (SH) {
         result (apply f args)
         end (time/now)
         time-taken (time/in-millis (time/interval start end))]
-    (log (clojure.string/join &quot; | &quot; (first stmts)) time-taken)
-    result))</pre></td></tr><tr><td class="docs"><p>Hook for korma, mercifully the library has a universal, singular
-   function where all queries eventually end up. &lt;3</p>
-</td><td class="codes"><pre class="brush: clojure">(defn korma-hook
-  [f &amp; args]
-  (let [start (time/now)
-        result (apply f args)
-        end (time/now)
-        time-taken (time/in-millis (time/interval start end))]
-    (log (:sql-str (first args)) time-taken)
+    (log-sql (clojure.string/join &quot; | &quot; (first stmts)) time-taken)
     result))</pre></td></tr><tr><td class="docs"><p>decorate c.j.j/query, wraps the fn var.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn decorate-query!
   []
@@ -3099,8 +3079,52 @@ net.brehaut.ClojureTools = (function (SH) {
   []
   (decorate-query!)
   (decorate-insert!)
-  (decorate-execute!))</pre></td></tr><tr><td class="docs"><p>Hooks into Korma to log SQL that gets executed.</p>
+  (decorate-execute!))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#black.water.korma" name="black.water.korma"><h1 class="project-name">black.water.korma</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns black.water.korma
+  (:require [clojure.java.jdbc :as j]
+            [robert.hooke :refer [add-hook]]
+            [korma.db :as kdb]
+            [korma.core :as kc]
+            [clansi.core :refer :all]
+            [black.water.log :refer [log-sql]]
+            [clj-time.core :as time]))</pre></td></tr><tr><td class="docs"><p>Hook for korma, mercifully the library has a universal, singular
+   function where all queries eventually end up. &lt;3</p>
+</td><td class="codes"><pre class="brush: clojure">(defn korma-hook
+  [f &amp; args]
+  (let [start (time/now)
+        result (apply f args)
+        end (time/now)
+        time-taken (time/in-millis (time/interval start end))]
+    (log-sql (:sql-str (first args)) time-taken)
+    result))</pre></td></tr><tr><td class="docs"><p>Hooks into Korma to log SQL that gets executed.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn decorate-korma!
   []
-  (add-hook #'kdb/exec-sql #'korma-hook))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+  (add-hook #'kdb/exec-sql #'korma-hook))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#black.water.log" name="black.water.log"><h1 class="project-name">black.water.log</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns black.water.log
+  (:require [clansi.core :refer :all]
+            [clj-time.core :as time]))</pre></td></tr><tr><td class="docs"><p>Color global variables, rebind as thou wilt.</p>
+</td><td class="codes"><pre class="brush: clojure">(def sql-color :green)
+(def time-color :red)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def logga nil)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn set-logger! [fun]
+  (alter-var-root
+   (var logga)
+   (fn [f]
+     fun)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn sanitize [sql]
+  (let [single-line (apply str (replace {\newline &quot; &quot;} sql))]
+    (clojure.string/replace
+     single-line #&quot; {2,}&quot;
+                  &quot; &quot;)))</pre></td></tr><tr><td class="docs"><p>Given the sql string and the milliseconds it took to execute, print
+   a (possibly) colorized readout of the string and the millis.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn log-sql
+  [sql millis]
+  (let [clean-sql (sanitize sql)
+        formatted (str (style clean-sql sql-color)
+                       &quot;| took:&quot;
+                       (style millis time-color)
+                       &quot;ms&quot;)]
+    (if (and logga (fn? logga))
+      (logga clean-sql millis)
+      (println formatted))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/fogus/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
        SyntaxHighlighter.all()</script></body></html>
