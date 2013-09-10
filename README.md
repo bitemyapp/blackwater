@@ -12,19 +12,26 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 In Leiningen add:
 
-    [blackwater "0.0.7"]
+    [blackwater "0.0.8"]
 
 to your :dependencies.
 
 Then, in your ns form:
 
-    [black.water :refer [decorate-cjj! decorate-korma!]]
+    [black.water.korma :refer [decorate-korma!]]
+    ;; or if you use cjj
+    [black.water.jdbc :refer [decorate-cjj!]]
 
 And invoke decorate-korma! or decorate-cjj! as appropriate. Thanks to technomancy's robert.hooke these operations are idempotent, but still marked with a `!` because they *ARE* modifying c.j.j and Korma.
 
 To disable the ANSI coloring, set `*use-ansi*` in the clansi ns to false.
 
 To customize ANSI coloring, set `time-color` or `sql-color` in the black.water ns. By default they are `:red` and `:green` respectively, check clansi for valid color symbols.
+
+Want custom logging behavior? Kinda getting outside the scope of this library (Korma and c.j.j have more typical logging facilities) but if you must:
+
+    [black.water.log :refer [log-fn set-logger!]]
+    (set-logger! (fn [sql millis] (println sql millis "WHOOOO")))
 
 ## Development
 

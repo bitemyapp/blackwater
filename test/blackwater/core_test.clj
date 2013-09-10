@@ -5,7 +5,8 @@
             [clansi.core :as clansi]
             [korma.core :refer :all]
             [korma.db :refer :all]
-            [black.water :refer :all]))
+            [black.water.korma :refer [decorate-korma!]]
+            [black.water.jdbc :refer [decorate-cjj!]]))
 
 (def sqlite-db {:subprotocol "sqlite"
                :classname "org.sqlite.JDBC"
