@@ -2,7 +2,7 @@
 
 A Clojure library for logging SQL queries and the time they took for Korma and clojure.java.jdbc
 
-![alt text](screenie.png "example image of blackwater output")
+!["example image of blackwater output"](screenie.png)
 
 ## Marginalia Documentation
 
@@ -12,7 +12,7 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 In Leiningen add:
 
-    [blackwater "0.0.8"]
+    !["Leiningen version"](https://clojars.org/blackwater/latest-version.svg)
 
 to your :dependencies.
 
