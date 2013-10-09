@@ -12,7 +12,7 @@ A Clojure library for logging SQL queries and the time they took for Korma and c
 
 In Leiningen add:
 
-    !["Leiningen version"](https://clojars.org/blackwater/latest-version.svg)
+!["Leiningen version"](https://clojars.org/blackwater/latest-version.svg)
 
 to your :dependencies.
 
