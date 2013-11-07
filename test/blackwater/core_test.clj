@@ -1,6 +1,8 @@
 (ns blackwater.core-test
   (:require [clojure.test :refer :all]
+            [clojure.java.io :refer [delete-file]]
             [clojure.java.jdbc :as j]
+            [clojure.java.jdbc.ddl :as ddl]
             [clojure.java.jdbc.sql :as s]
             [clansi.core :as clansi]
             [korma.core :refer :all]
@@ -8,15 +10,22 @@
             [black.water.korma :refer [decorate-korma!]]
             [black.water.jdbc :refer [decorate-cjj!]]))
 
+(def db-file "./test.sql")
+
 (def sqlite-db {:subprotocol "sqlite"
-               :classname "org.sqlite.JDBC"
-               :subname "./test.sql"})
+                :classname "org.sqlite.JDBC"
+                :subname db-file})
 
 (defdb korma-db sqlite-db)
 
 (defentity test-table
   (pk :id)
   (table :test_table))
+
+(defn drop-metadata! []
+  (j/db-do-commands sqlite-db
+    (ddl/drop-table
+     :metadata)))
 
 (defn run-query []
   (j/query sqlite-db
@@ -62,6 +71,11 @@
   (delete test-table
           (where {:id 9001})))
 
+(defn create-metadata-table! [db-conn]
+  (j/db-do-commands db-conn
+    (ddl/create-table
+     :metadata
+     [:schema_version "integer"])))
 
 (defn count-newlines [string]
   (count (clojure.string/split string #"\n")))
@@ -116,7 +130,15 @@
            i-and-d-out
            "DELETE FROM test_table WHERE id = ?"))
 
-      (is (= (count-newlines i-and-d-out) 2))))))
+      (is (= (count-newlines i-and-d-out) 2))))
+
+    (testing "JDBC db-do-command of DDL prints properly"
+      (let [_   (try (drop-metadata!) (catch Exception e nil)) ;; WHO CARES
+            out (with-out-str (create-metadata-table! sqlite-db))]
+        (is (.contains
+             out
+             "CREATE TABLE metadata (schema_version integer)"))))))
+
 
 (deftest test-blackwater-korma
   (decorate-korma!)

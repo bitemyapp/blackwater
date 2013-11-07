@@ -46,6 +46,10 @@ Now your `lein test` should pass and you're ready to develop.
 
 Note that the Korma functionality/logging is more likely to be comprehensive than c.j.j's because it has a cleaner and more uniform API. If you think this library is failing to log something for c.j.j, it probably *is* and I would request that you file a Github issue with bitemyapp/blackwater.
 
+## Changelog
+
+Added support for DDL and db-do-commands in general, updated JDBC dependency.
+
 ## License
 
 Copyright © 2013 Chris Allen

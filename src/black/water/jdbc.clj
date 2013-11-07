@@ -8,26 +8,30 @@
 
 (def extract-transaction? #'j/extract-transaction?)
 
+(defn generic-logger
+  [accessor f args]
+  (let [start (time/now)
+        result (apply f args)
+        end (time/now)
+        time-taken (time/in-millis (time/interval start end))]
+    (log-sql (accessor args) time-taken)
+    result))
+
 (defn query-hook
   "Hook for c.j.j query, destructures sql from arguments
    and times the run-time, sending the results to the log fn."
   [f & args]
-  (let [start (time/now)
-        result (apply f args)
-        end (time/now)
-        time-taken (time/in-millis (time/interval start end))]
-    (log-sql (first (second args)) time-taken)
-    result))
+  (generic-logger #(first (second %)) f args))
 
 (defn execute-hook
   "Hook for c.j.j execute!"
   [f & args]
-  (let [start (time/now)
-        result (apply f args)
-        end (time/now)
-        time-taken (time/in-millis (time/interval start end))]
-    (log-sql (clojure.string/join " | " (second args)) time-taken)
-    result))
+  (generic-logger #(clojure.string/join " | " (second %)) f args))
+
+(defn db-do-commands-hook
+  "Hook for c.j.j db-do-commands"
+  [f & args]
+  (generic-logger last f args))
 
 (defn insert-hook
   "Hook for c.j.j insert!"
@@ -57,9 +61,15 @@
   []
   (add-hook #'j/execute! #'execute-hook))
 
+(defn decorate-db-do-commands!
+  "decorate c.j.j/execute!, wraps the fn var."
+  []
+  (add-hook #'j/db-do-commands #'db-do-commands-hook))
+
 (defn decorate-cjj!
   "Hooks into clojure.java.jdbc to log queries, inserts, and execute"
   []
+  (decorate-db-do-commands!)
   (decorate-query!)
   (decorate-insert!)
   (decorate-execute!))
