@@ -48,7 +48,7 @@ Note that the Korma functionality/logging is more likely to be comprehensive tha
 
 ## Changelog
 
-Added support for DDL and db-do-commands in general, updated JDBC dependency.
+0.0.9 - Added support for DDL and db-do-commands in general, updated JDBC dependency.
 
 ## License
 
