@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [clj-time "0.6.0"]
                  [robert/hooke "1.3.0"]
-                 [org.clojure/java.jdbc "0.3.0-beta1"]
+                 [org.clojure/java.jdbc "0.3.2"]
+                 [java-jdbc/dsl "0.1.0"]
                  [korma "0.3.0-RC5"]
                  [myguidingstar/clansi "1.3.0"]]
   :profiles {:dev {:dependencies [[org.xerial/sqlite-jdbc "3.7.2"]]}})

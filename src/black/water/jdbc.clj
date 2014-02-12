@@ -1,7 +1,7 @@
 (ns black.water.jdbc
   (:require [clojure.java.jdbc :as j]
             [robert.hooke :refer [add-hook]]
-            [clojure.java.jdbc.sql :as s]
+            [java-jdbc.sql :as s]
             [clansi.core :refer :all]
             [black.water.log :refer [log-sql]]
             [clj-time.core :as time]))
